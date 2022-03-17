@@ -7,9 +7,9 @@
     </form>
     <tr v-for="(note, index) in this.notes" :key="index">
       <td v-if="!note.isActive">{{ note.noteName }}</td>
-      <input type="text" v-if="note.isActive" v-bind:value="note.noteName" v-model="editNoteName">
+      <input type="text" v-if="note.isActive" v-model="note.noteName">
       <td v-if="!note.isActive"><button id="updButton" v-on:click="updNote(note)">編集</button></td>
-      <td v-if="note.isActive"><button id="updfinishButton" v-on:click="updNoteConfirm(this.editNoteName)">編集確定</button></td>
+      <td v-if="note.isActive"><button id="updfinishButton" v-on:click="updNoteConfirm(note.noteName,note)">編集確定</button></td>
       <td><button id="delButton" v-on:click="delNote(note)">削除</button></td>
     </tr>
   </div>
@@ -41,16 +41,26 @@ methods: {
     axios.post("http://127.0.0.1:8000/api/note", {
       noteName: this.noteName
     }).then(() => {
-      //this.getNotes();
+      this.getNotes();
     });
   },
   updNote: function (note) {
     this.$set(note, "isActive", true);
   },
-  updNoteConfirm: function (editNoteName) {
-    console.log(editNoteName)
+  updNoteConfirm: function (editNoteName,note) {
+    axios.post("http://127.0.0.1:8000/api/note/"+note.id, {
+      _method: 'PUT',
+      editNoteName: editNoteName
+    }).then(() => {
+      this.$set(note, "isActive", false);
+    });
   },
-  delNote: function () {
+  delNote: function (note) {
+    axios.post('http://127.0.0.1:8000/api/note/' +note.id,{
+      _method: 'DELETE'
+    }).then(()=>{
+      this.getNotes();
+    })
   }
 },
 created() {
