@@ -6,9 +6,10 @@
       <button type="submit">追加</button>
     </form>
     <tr v-for="(note, index) in this.notes" :key="index">
-      <td v-if="!note.isActive" key="input-email">{{ note.noteName }}</td>
-      <td v-if="note.isActive" key="input-email">aaa</td>
-      <td><button id="updButton" v-show="!note.isActive" v-on:click="updNote(note)">編集</button></td>
+      <td v-if="!note.isActive">{{ note.noteName }}</td>
+      <input type="text" v-if="note.isActive" v-bind:value="note.noteName" v-model="editNoteName">
+      <td v-if="!note.isActive"><button id="updButton" v-on:click="updNote(note)">編集</button></td>
+      <td v-if="note.isActive"><button id="updfinishButton" v-on:click="updNoteConfirm(this.editNoteName)">編集確定</button></td>
       <td><button id="delButton" v-on:click="delNote(note)">削除</button></td>
     </tr>
   </div>
@@ -21,17 +22,18 @@ export default {
 data: function () {
 return {
   notes: [],
-  noteName: ''
+  noteName: '',
+  editNoteName: ''
 }
 },
 methods: {
   getNotes() {
     axios.get("http://127.0.0.1:8000/api/note")
         .then((res) => {
-          this.notes = res.data;
-          this.notes.forEach(function (note) {
+          res.data.forEach(function (note) {
             note.isActive = false
           });
+          this.notes = res.data;
           console.log(this.notes);
         });
   },
@@ -44,7 +46,9 @@ methods: {
   },
   updNote: function (note) {
     this.$set(note, "isActive", true);
-    console.log(this.notes);
+  },
+  updNoteConfirm: function (editNoteName) {
+    console.log(editNoteName)
   },
   delNote: function () {
   }
