@@ -1,6 +1,10 @@
 <template>
   <div id="app">
     <h3>ノート一覧</h3>
+    <form class="search-form" v-on:submit.prevent="searchNote">
+      検索ワード <input type="text" v-model="searchKeyWord">
+      <button type="submit">検索</button>
+    </form>
     <form class="add-form" v-on:submit.prevent="addNote">
       ノート名 <input type="text" v-model="noteName">
       <button type="submit">追加</button>
@@ -23,7 +27,8 @@ data: function () {
 return {
   notes: [],
   noteName: '',
-  editNoteName: ''
+  editNoteName: '',
+  searchKeyWord: ''
 }
 },
 methods: {
@@ -34,14 +39,14 @@ methods: {
             note.isActive = false
           });
           this.notes = res.data;
-          console.log(this.notes);
         });
   },
   addNote: function () {
     axios.post("http://127.0.0.1:8000/api/note", {
       noteName: this.noteName
-    }).then(() => {
-      this.getNotes();
+    }).then((response) => {
+      let id = response.id
+      this.notes.push({"id":id,"isActive":false,"noteName":this.noteName})
     });
   },
   updNote: function (note) {
