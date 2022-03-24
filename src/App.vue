@@ -35,6 +35,7 @@ methods: {
   getNotes() {
     axios.get("http://127.0.0.1:8000/api/note")
         .then((res) => {
+          console.log(res.data);
           res.data.forEach(function (note) {
             note.isActive = false
           });
@@ -64,7 +65,17 @@ methods: {
     axios.post('http://127.0.0.1:8000/api/note/' +note.id,{
       _method: 'DELETE'
     }).then(()=>{
-      this.getNotes();
+      this.notes.pop();
+    })
+  },
+  searchNote: function() {
+    axios.get('http://127.0.0.1:8000/api/search?' +this.searchKeyWord,{
+    }).then((res)=>{
+      this.notes = [];
+      console.log(this.notes)
+      res.data.forEach((note) =>{
+        this.notes.push({"id":note.id,"isActive":false,"noteName":note.noteName})
+      });
     })
   }
 },
