@@ -12,9 +12,9 @@
     <tr v-for="(note, index) in this.notes" :key="index">
       <td v-if="!note.isActive">{{ note.noteName }}</td>
       <input type="text" v-if="note.isActive" v-model="note.noteName">
-      <td v-if="!note.isActive"><button id="updButton" v-on:click="updNote(note)">編集</button></td>
-      <td v-if="note.isActive"><button id="updfinishButton" v-on:click="updNoteConfirm(note.noteName,note)">編集確定</button></td>
-      <td><button id="delButton" v-on:click="delNote(note)">削除</button></td>
+      <td v-if="!note.isActive"><button id="updButton" v-on:click="updNote(index)">編集</button></td>
+      <td v-if="note.isActive"><button id="updfinishButton" v-on:click="updNoteConfirm(note.noteName,index)">編集確定</button></td>
+      <td><button id="delButton" v-on:click="delNote(index)">削除</button></td>
     </tr>
   </div>
 </template>
@@ -50,29 +50,31 @@ methods: {
       this.notes.push({"id":id,"isActive":false,"noteName":this.noteName})
     });
   },
-  updNote: function (note) {
-    this.$set(note, "isActive", true);
+  updNote: function (index) {
+    this.$set(this.notes[index], "isActive", true);
   },
-  updNoteConfirm: function (editNoteName,note) {
-    axios.post("http://127.0.0.1:8000/api/note/"+note.id, {
+  updNoteConfirm: function (editNoteName,index) {
+    axios.post("http://127.0.0.1:8000/api/note/"+this.notes[index].id, {
       _method: 'PUT',
       editNoteName: editNoteName
     }).then(() => {
-      this.$set(note, "isActive", false);
+      this.$set(this.notes[index], "isActive", false);
     });
   },
-  delNote: function (note) {
-    axios.post('http://127.0.0.1:8000/api/note/' +note.id,{
+  delNote: function (index) {
+    axios.post('http://127.0.0.1:8000/api/note/' +this.notes[index].id,{
       _method: 'DELETE'
     }).then(()=>{
-      this.notes.pop();
+      this.notes.splice(index, 1)
     })
   },
   searchNote: function() {
-    axios.get('http://127.0.0.1:8000/api/search?' +this.searchKeyWord,{
-    }).then((res)=>{
+    if(!this.searchKeyWord){
+      this.getNotes();
+      return
+    }
+    axios.get('http://127.0.0.1:8000/api/search/' +this.searchKeyWord).then((res)=>{
       this.notes = [];
-      console.log(this.notes)
       res.data.forEach((note) =>{
         this.notes.push({"id":note.id,"isActive":false,"noteName":note.noteName})
       });
