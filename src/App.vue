@@ -22,79 +22,71 @@ import addmodal from '@/components/addmodal.vue';
 import editmodal from '@/components/editmodal.vue';
 
 export default {
-  data: function () {
-    return {
-      notes: [],
-      editNoteName: '',
-      searchKeyWord: '',
-      showAddModal: false,
-      showEditModal: false
-    }
-  },
-  methods: {
-    getNotes() {
-      axios.get("http://127.0.0.1:8000/api/note")
-          .then((res) => {
-            console.log(res.data);
-            res.data.forEach(function (note) {
-              note.isActive = false
-            });
-            this.notes = res.data;
+data: function () {
+return {
+  notes: [],
+  noteName: '',
+  editNoteName: '',
+  searchKeyWord: '',
+  showAddModal: false,
+  showEditModal: false
+}
+},
+methods: {
+  getNotes() {
+    axios.get("http://127.0.0.1:8000/api/note")
+        .then((res) => {
+          console.log(res.data);
+          res.data.forEach(function (note) {
+            note.isActive = false
           });
-    },
-    addNote: function (noteName) {
-      axios.post("http://127.0.0.1:8000/api/note", {
-        noteName: noteName
-      }).then((response) => {
-        let id = response.id
-        this.notes.push({"id": id, "isActive": false, "noteName": noteName})
-        this.closeAddModal();
-      });
-    },
-    updNote: function (index) {
-      this.$set(this.notes[index], "isActive", true);
-    },
-    updNoteConfirm: function (editNoteName, index) {
-      axios.post("http://127.0.0.1:8000/api/note/" + this.notes[index].id, {
-        _method: 'PUT',
-        editNoteName: editNoteName
-      }).then(() => {
-        this.$set(this.notes[index], "isActive", false);
-      });
-    },
-    delNote: function (index) {
-      axios.post('http://127.0.0.1:8000/api/note/' + this.notes[index].id, {
-        _method: 'DELETE'
-      }).then(() => {
-        this.notes.splice(index, 1)
-      })
-    },
-    searchNote: function () {
-      if (!this.searchKeyWord) {
-        this.getNotes();
-        return
-      }
-      axios.get('http://127.0.0.1:8000/api/search/' + this.searchKeyWord).then((res) => {
-        this.notes = [];
-        res.data.forEach((note) => {
-          this.notes.push({"id": note.id, "isActive": false, "noteName": note.noteName})
+          this.notes = res.data;
         });
-      })
-    },
-    openAddModal: function () {
-      this.showAddModal = true
-    },
-    closeAddModal: function () {
-      this.showAddModal = false
-    },
-    openEditModal: function () {
-      this.showEditModal = true
-    },
-    closeEditModal: function () {
-      this.showEditModal = false
-    },
   },
-  created() {
+  addNote: function () {
+    axios.post("http://127.0.0.1:8000/api/note", {
+      noteName: this.noteName
+    }).then((response) => {
+      let id = response.id
+      this.notes.push({"id":id,"isActive":false,"noteName":this.noteName})
+    });
+  },
+  updNote: function (index) {
+    this.$set(this.notes[index], "isActive", true);
+  },
+  updNoteConfirm: function (editNoteName,index) {
+    axios.post("http://127.0.0.1:8000/api/note/"+this.notes[index].id, {
+      _method: 'PUT',
+      editNoteName: editNoteName
+    }).then(() => {
+      this.$set(this.notes[index], "isActive", false);
+    });
+  },
+  delNote: function (index) {
+    axios.post('http://127.0.0.1:8000/api/note/' +this.notes[index].id,{
+      _method: 'DELETE'
+    }).then(()=>{
+      this.notes.splice(index, 1)
+    })
+  },
+  searchNote: function() {
+    if(!this.searchKeyWord){
+      this.getNotes();
+      return
+    }
+    axios.get('http://127.0.0.1:8000/api/search/' +this.searchKeyWord).then((res)=>{
+      this.setNoteDataWithDeactive(res.data);
+    })
+  },
+  setNoteDataWithDeactive: function(noteData) {
+    this.notes = [];
+    noteData.forEach((note) => {
+      note.isActive = false
+    })
+    this.notes = noteData;
+  },
+},
+created() {
     this.getNotes();
   },
   components: {
