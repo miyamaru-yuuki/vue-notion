@@ -36,19 +36,16 @@ methods: {
   getNotes() {
     axios.get("http://127.0.0.1:8000/api/note")
         .then((res) => {
-          console.log(res.data);
-          res.data.forEach(function (note) {
-            note.isActive = false
-          });
-          this.notes = res.data;
+          this.setNoteDataWithDeactive(res.data);
         });
   },
-  addNote: function () {
+  addNote: function (noteName) {
     axios.post("http://127.0.0.1:8000/api/note", {
-      noteName: this.noteName
+      noteName: noteName
     }).then((response) => {
       let id = response.id
-      this.notes.push({"id":id,"isActive":false,"noteName":this.noteName})
+      this.notes.push({"id":id,"isActive":false,"noteName":noteName})
+      this.closeAddModal();
     });
   },
   updNote: function (index) {
@@ -85,10 +82,22 @@ methods: {
     })
     this.notes = noteData;
   },
+  openAddModal: function () {
+    this.showAddModal = true
+  },
+  closeAddModal: function () {
+    this.showAddModal = false
+  },
+  openEditModal: function () {
+    this.showEditModal = true
+  },
+  closeEditModal: function () {
+    this.showAddModal = false
+  },
 },
 created() {
     this.getNotes();
-  },
+},
   components: {
     addmodal,
     editmodal
