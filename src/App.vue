@@ -75,9 +75,12 @@ methods: {
     }
     axios.get('http://127.0.0.1:8000/api/search/' +this.searchKeyWord).then((res)=>{
       this.notes = [];
-      res.data.forEach((note) =>{
-        this.notes.push({"id":note.id,"isActive":false,"noteName":note.noteName})
-      });
+      this.isActiveFalse(res.data)
+    })
+  },
+  isActiveFalse: function(noteData) {
+    noteData.forEach((note) => {
+      this.notes.push({"id": note.id, "isActive": false, "noteName": note.noteName})
     })
   }
 },
