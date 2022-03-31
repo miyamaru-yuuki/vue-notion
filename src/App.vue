@@ -11,7 +11,7 @@
       <td v-if="!note.isActive">{{ note.noteName }}</td>
       <input type="text" v-if="note.isActive" v-model="note.noteName">
       <td v-if="!note.isActive"><button id="updButton" v-on:click="openEditModal()">編集</button></td>
-      <editmodal v-show="showEditModal" v-on:from-child_addNote="addNote" v-on:from-child_close="closeEditModal"/>
+      <editmodal v-show="showEditModal" v-on:from-child_editNote="updNote" v-on:from-child_close="closeEditModal"/>
     </tr>
   </div>
 </template>
@@ -91,7 +91,7 @@ export default {
       this.showEditModal = true
     },
     closeEditModal: function () {
-      this.showAddModal = false
+      this.showEditModal = false
     },
   },
   created() {
