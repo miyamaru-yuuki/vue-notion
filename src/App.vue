@@ -10,8 +10,8 @@
     <tr v-for="(note, index) in this.notes" :key="index">
       <td v-if="!note.isActive">{{ note.noteName }}</td>
       <input type="text" v-if="note.isActive" v-model="note.noteName">
-      <td v-if="!note.isActive"><button id="updButton" v-on:click="openEditModal()">編集</button></td>
-      <editmodal v-show="showEditModal" v-on:from-child_editNote="updNote" v-on:from-child_close="closeEditModal"/>
+      <td v-if="!note.isActive"><button id="updButton" v-on:click="openEditModal(note.noteName)">編集</button></td>
+      <editmodal v-show="showEditModal" v-bind:noteNameTest="editNoteName" v-on:from-child_editNote="updNote" v-on:from-child_close="closeEditModal"/>
     </tr>
   </div>
 </template>
@@ -26,7 +26,7 @@ data: function () {
 return {
   notes: [],
   noteName: '',
-  editNoteName: '',
+  editNoteName: 1,
   searchKeyWord: '',
   showAddModal: false,
   showEditModal: false
@@ -48,17 +48,17 @@ methods: {
       this.closeAddModal();
     });
   },
-  updNote: function (index) {
-    this.$set(this.notes[index], "isActive", true);
-  },
-  updNoteConfirm: function (editNoteName,index) {
-    axios.post("http://127.0.0.1:8000/api/note/"+this.notes[index].id, {
-      _method: 'PUT',
-      editNoteName: editNoteName
-    }).then(() => {
-      this.$set(this.notes[index], "isActive", false);
-    });
-  },
+  // updNote: function (index) {
+  //   this.$set(this.notes[index], "isActive", true);
+  // },
+  // updNoteConfirm: function (editNoteName,index) {
+  //   axios.post("http://127.0.0.1:8000/api/note/"+this.notes[index].id, {
+  //     _method: 'PUT',
+  //     editNoteName: editNoteName
+  //   }).then(() => {
+  //     this.$set(this.notes[index], "isActive", false);
+  //   });
+  // },
   delNote: function (index) {
     axios.post('http://127.0.0.1:8000/api/note/' +this.notes[index].id,{
       _method: 'DELETE'
@@ -88,11 +88,12 @@ methods: {
   closeAddModal: function () {
     this.showAddModal = false
   },
-  openEditModal: function () {
+  openEditModal: function (noteName) {
+    this.editNoteName = noteName
     this.showEditModal = true
   },
   closeEditModal: function () {
-    this.showAddModal = false
+    this.showEditModal = false
   },
 },
 created() {
@@ -122,24 +123,6 @@ input.transparent:focus {
   outline: none;
   -webkit-box-shadow: none;
   box-shadow: none;
-}
-#overlay{
-  z-index:1;
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background-color:rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-#content{
-  z-index:2;
-  width:50%;
-  padding: 1em;
-  background:#fff;
 }
 
 </style>
