@@ -6,13 +6,13 @@
       <button type="submit">検索</button>
     </form>
     <button v-on:click="openAddModal">ノートを追加する</button>
-    <addmodal v-show="showAddModal" v-on:from-child_addNote="addNote" v-on:from-child_close="closeAddModal"/>
+    <addmodal v-show="showAddModal" v-on:from-child_addNote="addNote" v-on:from-child_delNote="delNote" v-on:from-child_close="closeAddModal"/>
     <tr v-for="(note, index) in this.notes" :key="index">
       <td v-if="!note.isActive">{{ note.noteName }}</td>
       <input type="text" v-if="note.isActive" v-model="note.noteName">
-      <td v-if="!note.isActive"><button id="updButton" v-on:click="openEditModal(note.noteName)">編集</button></td>
-      <editmodal v-show="showEditModal" v-bind:noteNameTest="editNoteName" v-on:from-child_editNote="updNote" v-on:from-child_close="closeEditModal"/>
+      <td v-if="!note.isActive"><button id="updButton" v-on:click="openEditModal(this.notes,index)">編集</button></td>
     </tr>
+    <editmodal v-show="showEditModal" v-bind:notes="this.notes" v-bind:index="this.index" v-on:from-child_editNote="editNote(noteName)" v-on:from-child_close="closeEditModal"/>
   </div>
 </template>
 
@@ -25,8 +25,10 @@ export default {
 data: function () {
 return {
   notes: [],
+  note: '',
+  index: 0,
   noteName: '',
-  editNoteName: 1,
+  editNoteName: '',
   searchKeyWord: '',
   showAddModal: false,
   showEditModal: false
@@ -48,22 +50,21 @@ methods: {
       this.closeAddModal();
     });
   },
-  // updNote: function (index) {
-  //   this.$set(this.notes[index], "isActive", true);
-  // },
-  // updNoteConfirm: function (editNoteName,index) {
-  //   axios.post("http://127.0.0.1:8000/api/note/"+this.notes[index].id, {
-  //     _method: 'PUT',
-  //     editNoteName: editNoteName
-  //   }).then(() => {
-  //     this.$set(this.notes[index], "isActive", false);
-  //   });
-  // },
+  editNote: function (noteName) {
+    axios.post("http://127.0.0.1:8000/api/note/"+this.notes[this.index].id, {
+      _method: 'PUT',
+      editNoteName: noteName
+    }).then(() => {
+      this.$set(this.notes[this.index], "isActive", false);
+      this.closeEditModal();
+    });
+  },
   delNote: function (index) {
     axios.post('http://127.0.0.1:8000/api/note/' +this.notes[index].id,{
       _method: 'DELETE'
     }).then(()=>{
       this.notes.splice(index, 1)
+      this.closeEditModal();
     })
   },
   searchNote: function() {
@@ -88,8 +89,8 @@ methods: {
   closeAddModal: function () {
     this.showAddModal = false
   },
-  openEditModal: function (noteName) {
-    this.editNoteName = noteName
+  openEditModal: function (notes,index) {
+    this.index = index
     this.showEditModal = true
   },
   closeEditModal: function () {

@@ -2,10 +2,9 @@
   <div id="overlay">
     <div id="content">
       <p>ノート編集画面</p>
-      <p>{{noteNameTest}}</p>
-      ノート名 <input type="text" v-model="noteName">
+      ノート名 <input type="text" v-model="this.noteName">
       <p><button v-on:click="clickEvent_editNote">編集</button></p>
-      <p><button v-on:click="clickEvent_delNote">削除</button></p>
+      <p><button v-on:click="clickEvent_delNote(index)">削除</button></p>
       <p><button v-on:click="clickEvent_close">閉じる</button></p>
     </div>
   </div>
@@ -21,11 +20,11 @@ export default {
   },
   methods :{
     clickEvent_editNote: function(){
-      this.$emit('from-child_addNote',this.noteName)
-      this.noteName = ""
+      this.$emit('from-child_editNote',this.noteName)
     },
-    clickEvent_delNote: function(){
-      this.$emit('from-child_addNote',this.noteName)
+    clickEvent_delNote: function(index){
+      console.log(index)
+      this.$emit('from-child_delNote',index)
       this.noteName = ""
     },
     clickEvent_close: function(){
@@ -33,8 +32,10 @@ export default {
       this.noteName = ""
     }
   },
-  // eslint-disable-next-line vue/no-dupe-keys
-  props: ["noteNameTest"],
+  props: ["notes","index"],
+  created() {
+    console.log(this.notes)
+  },
 }
 </script>
 
