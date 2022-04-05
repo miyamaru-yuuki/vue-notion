@@ -7,12 +7,12 @@
     </form>
     <button v-on:click="openAddModal">ノートを追加する</button>
     <addmodal v-show="showAddModal" v-on:from-child_addNote="addNote" v-on:from-child_delNote="delNote" v-on:from-child_close="closeAddModal"/>
-    <tr v-for="(note, index) in this.notes" :key="index">
+    <tr v-for="(note, index) in notes" :key="index">
       <td v-if="!note.isActive">{{ note.noteName }}</td>
       <input type="text" v-if="note.isActive" v-model="note.noteName">
-      <td v-if="!note.isActive"><button id="updButton" v-on:click="openEditModal(this.notes,index)">編集</button></td>
+      <td v-if="!note.isActive"><button id="updButton" v-on:click="openEditModal(notes,index)">編集</button></td>
     </tr>
-    <editmodal v-show="showEditModal" v-bind:notes="this.notes" v-bind:index="this.index" v-on:from-child_editNote="editNote(noteName)" v-on:from-child_close="closeEditModal"/>
+    <editmodal v-show="showEditModal" v-bind:notes="notes" v-bind:index="index" v-on:from-child_editNote="editNote(noteName)" v-on:from-child_close="closeEditModal"/>
   </div>
 </template>
 

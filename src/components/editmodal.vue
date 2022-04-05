@@ -2,7 +2,7 @@
   <div id="overlay">
     <div id="content">
       <p>ノート編集画面</p>
-      ノート名 <input type="text" v-model="this.noteName">
+      ノート名 <input type="text" v-model="noteName">
       <p><button v-on:click="clickEvent_editNote">編集</button></p>
       <p><button v-on:click="clickEvent_delNote(index)">削除</button></p>
       <p><button v-on:click="clickEvent_close">閉じる</button></p>
@@ -15,7 +15,7 @@ export default {
   name: "editmodal",
   data: function () {
     return {
-      noteName: ""
+      noteName: this.notes[this.index].noteName
     }
   },
   methods :{
@@ -33,8 +33,8 @@ export default {
     }
   },
   props: ["notes","index"],
-  created() {
-    console.log(this.notes)
+  mounted() {
+    this.noteName = this.notes[this.index].noteName
   },
 }
 </script>
