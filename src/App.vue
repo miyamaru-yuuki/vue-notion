@@ -12,7 +12,7 @@
       <input type="text" v-if="note.isActive" v-model="note.noteName">
       <td v-if="!note.isActive"><button id="updButton" v-on:click="openEditModal(notes,index)">編集</button></td>
     </tr>
-    <editmodal v-if="showEditModal" v-bind:notes="notes" v-bind:index="index" v-on:from-child_editNote="editNote" v-on:from-child_close="closeEditModal"/>
+    <editmodal v-if="showEditModal" v-bind:notes="notes" v-bind:index="index" v-on:from-child_editNote="editNote" v-on:from-child_delNote="delNote" v-on:from-child_close="closeEditModal"/>
   </div>
 </template>
 
@@ -60,11 +60,11 @@ methods: {
       this.closeEditModal();
     });
   },
-  delNote: function (index) {
-    axios.post('http://127.0.0.1:8000/api/note/' +this.notes[index].id,{
+  delNote: function () {
+    axios.post('http://127.0.0.1:8000/api/note/' +this.notes[this.index].id,{
       _method: 'DELETE'
     }).then(()=>{
-      this.notes.splice(index, 1)
+      this.notes.splice(this.index, 1)
       this.closeEditModal();
     })
   },
