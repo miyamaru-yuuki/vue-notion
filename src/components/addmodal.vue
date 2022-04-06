@@ -3,6 +3,7 @@
     <div id="content">
       <p>ノート追加画面</p>
       ノート名 <input type="text" v-model="noteName">
+      <p v-if="isInValidNoteName">ノート名を入力してください</p>
       <p><button v-on:click="clickEvent_addNote">追加</button></p>
       <p><button v-on:click="clickEvent_close">閉じる</button></p>
     </div>
@@ -14,7 +15,7 @@ export default {
   name: "addmodal",
   data: function () {
     return {
-      noteName: ""
+      noteName: null
     }
   },
   methods :{
@@ -25,6 +26,11 @@ export default {
     clickEvent_close: function(){
       this.$emit('from-child_close')
       this.noteName = ""
+    }
+  },
+  computed:{
+    isInValidNoteName(){
+      return !this.noteName;
     }
   }
 }
