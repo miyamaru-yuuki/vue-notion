@@ -33,9 +33,6 @@ export default {
     }
   },
   props: ["notes","index"],
-  mounted() {
-    this.noteName = this.notes[this.index].noteName
-  },
 }
 </script>
 

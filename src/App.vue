@@ -12,7 +12,7 @@
       <input type="text" v-if="note.isActive" v-model="note.noteName">
       <td v-if="!note.isActive"><button id="updButton" v-on:click="openEditModal(notes,index)">編集</button></td>
     </tr>
-    <editmodal v-show="showEditModal" v-bind:notes="notes" v-bind:index="index" v-on:from-child_editNote="editNote(noteName)" v-on:from-child_close="closeEditModal"/>
+    <editmodal v-if="showEditModal" v-bind:notes="notes" v-bind:index="index" v-on:from-child_editNote="editNote" v-on:from-child_close="closeEditModal"/>
   </div>
 </template>
 
@@ -55,7 +55,8 @@ methods: {
       _method: 'PUT',
       editNoteName: noteName
     }).then(() => {
-      this.$set(this.notes[this.index], "isActive", false);
+      const note = {"id":this.index + 1,"isActive":false,"noteName":noteName};
+      this.notes.splice(this.index, 1, note)
       this.closeEditModal();
     });
   },
@@ -97,9 +98,9 @@ methods: {
     this.showEditModal = false
   },
 },
-created() {
+  created() {
     this.getNotes();
-},
+  },
   components: {
     addmodal,
     editmodal
