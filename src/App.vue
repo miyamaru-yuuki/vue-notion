@@ -8,9 +8,8 @@
     <button v-on:click="openAddModal">ノートを追加する</button>
     <addmodal v-show="showAddModal" v-on:from-child_addNote="addNote" v-on:from-child_delNote="delNote" v-on:from-child_close="closeAddModal"/>
     <tr v-for="(note, index) in notes" :key="index">
-      <td v-if="!note.isActive">{{ note.noteName }}</td>
-      <input type="text" v-if="note.isActive" v-model="note.noteName">
-      <td v-if="!note.isActive"><button id="updButton" v-on:click="openEditModal(notes,index)">編集</button></td>
+      <td>{{ note.noteName }}</td>
+      <td><button id="updButton" v-on:click="openEditModal(notes,index)">編集</button></td>
     </tr>
     <editmodal v-if="showEditModal" v-bind:notes="notes" v-bind:index="index" v-on:from-child_editNote="editNote" v-on:from-child_delNote="delNote" v-on:from-child_close="closeEditModal"/>
   </div>
@@ -28,7 +27,6 @@ return {
   note: '',
   index: 0,
   noteName: '',
-  editNoteName: '',
   searchKeyWord: '',
   showAddModal: false,
   showEditModal: false
@@ -46,7 +44,7 @@ methods: {
       noteName: noteName
     }).then((response) => {
       let id = response.id
-      this.notes.push({"id":id,"isActive":false,"noteName":noteName})
+      this.notes.push({"id":id,"noteName":noteName})
       this.closeAddModal();
     });
   },
@@ -55,7 +53,7 @@ methods: {
       _method: 'PUT',
       editNoteName: noteName
     }).then(() => {
-      const note = {"id":this.index + 1,"isActive":false,"noteName":noteName};
+      const note = {"id":this.index + 1,"noteName":noteName};
       this.notes.splice(this.index, 1, note)
       this.closeEditModal();
     });
@@ -74,7 +72,7 @@ methods: {
       return
     }
     axios.get('http://127.0.0.1:8000/api/search/' +this.searchKeyWord).then((res)=>{
-      this.setNoteDataWithDeactive(res.data);
+      this.notes = res.data
     })
   },
   setNoteDataWithDeactive: function(noteData) {
